@@ -25,7 +25,8 @@ def showcalendar():
     full_tasks = [client.tasks.find_by_id(task['id']) for task in tasks]
 
     n = len(me['workspaces'])
-    colors = ['DarkGreen','Tomato','GoldenRod','DodgerBlue','DimGray']
+    colors = ['DarkGreen','Tomato','GoldenRod','DodgerBlue','DimGray',
+              'BlueViolet','DarkCyan','DarkTurquoise','Khaki','Orchid']
     color = dict(zip([w['id'] for w in me['workspaces']],colors[:n]))
 
     events_json = json.dumps([{'title': task['name'], 'start': task['due_on'], 'color': color[task['workspace']['id']]} for task in full_tasks])
