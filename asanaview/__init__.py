@@ -6,7 +6,6 @@ import json
 import shutil
 import tempfile
 import webbrowser
-import fileinput
 
 PERSONAL_ACCESS_TOKEN = os.environ['ASANA_TOKEN']
 
@@ -26,17 +25,21 @@ def showcalendar():
 
     n = len(me['workspaces'])
     colors = ['DarkGreen','Tomato','GoldenRod','DodgerBlue','DimGray',
-              'BlueViolet','DarkCyan','DarkTurquoise','Khaki','Orchid']
+            'BlueViolet','DarkCyan','DarkTurquoise','Khaki','Orchid']
     color = dict(zip([w['id'] for w in me['workspaces']],colors[:n]))
 
-    events_json = json.dumps([{'title': task['name'], 'start': task['due_on'], 'color': color[task['workspace']['id']]} for task in full_tasks])
+    events_json = json.dumps([{'title': task['name'], 
+                            'start': task['due_on'], 
+                            'color': color[task['workspace']['id']],
+                            'link_to_url': f"https://app.asana.com/0/0/{task['id']}"}
+                                for task in full_tasks])
 
     tmpdir = new_html_temp('fullcalendar')
-    with open(os.path.join(tmpdir,"fullcalendar", "default.html"),'r+') as f:
+    with open(os.path.join(tmpdir,"fullcalendar", "default.html"),'r') as f:
         filedata = f.read()
         filedata = filedata.replace("EVENTS",events_json)
         filedata = filedata.replace("TODAY",datetime.datetime.now().strftime("%Y-%m-%d"))
-        f.truncate(0)
+    with open(os.path.join(tmpdir,"fullcalendar", "default.html"),'w') as f:
         f.write(filedata)
 
     return html_open(os.path.join(tmpdir,"fullcalendar"),"default.html")

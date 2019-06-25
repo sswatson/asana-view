@@ -11,6 +11,7 @@
 <script src='packages/daygrid/main.js'></script>
 <script src='packages/timegrid/main.js'></script>
 <script src='packages/list/main.js'></script>
+<script src='packages/jquery/main.js'></script>
 <script>
 
   document.addEventListener('DOMContentLoaded', function() {
@@ -27,7 +28,12 @@
       navLinks: true,
       editable: true,
       eventLimit: true, // allow "more" link when too many events
-      events: EVENTS
+      events: EVENTS,
+      eventRender: function (info) {
+                  if (info.event.extendedProps.link_to_url != null && info.event.extendedProps.link_to_url != "") {
+                      $(info.el).attr("href", info.event.extendedProps.link_to_url);
+                      $(info.el).attr("target", "_blank");
+                  }}
     });
 
     calendar.render();
