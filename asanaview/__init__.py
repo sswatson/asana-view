@@ -16,33 +16,33 @@ def showcalendar():
     tasks = []
     for workspace in me['workspaces']:
         tasks.extend(list(client.tasks.find_all(params={
-            'workspace':workspace['id'],
-            'assignee':me['id'],
+            'workspace':workspace['gid'],
+            'assignee':me['gid'],
             'completed_since':datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         })))
 
-    full_tasks = [client.tasks.find_by_id(task['id']) for task in tasks]
+    full_tasks = [client.tasks.find_by_id(task['gid']) for task in tasks]
 
     n = len(me['workspaces'])
     colors = ['DarkGreen','Tomato','GoldenRod','DodgerBlue','DimGray',
             'BlueViolet','DarkCyan','DarkTurquoise','Khaki','Orchid']
-    color = dict(zip([w['id'] for w in me['workspaces']],colors[:n]))
+    color = dict(zip([w['gid'] for w in me['workspaces']],colors[:n]))
 
     events_json = json.dumps([{'title': task['name'], 
                             'start': task['due_on'], 
-                            'color': color[task['workspace']['id']],
-                            'link_to_url': f"https://app.asana.com/0/0/{task['id']}"}
+                            'color': color[task['workspace']['gid']],
+                            'link_to_url': f"https://app.asana.com/0/0/{task['gid']}"}
                                 for task in full_tasks])
 
     tmpdir = new_html_temp('fullcalendar')
-    with open(os.path.join(tmpdir,"fullcalendar", "default.html"),'r') as f:
+    with open(os.path.join(tmpdir,"fullcalendar", "asanaview.html"),'r') as f:
         filedata = f.read()
         filedata = filedata.replace("EVENTS",events_json)
         filedata = filedata.replace("TODAY",datetime.datetime.now().strftime("%Y-%m-%d"))
-    with open(os.path.join(tmpdir,"fullcalendar", "default.html"),'w') as f:
+    with open(os.path.join(tmpdir,"fullcalendar", "asanaview.html"),'w') as f:
         f.write(filedata)
 
-    return html_open(os.path.join(tmpdir,"fullcalendar"),"default.html")
+    return html_open(os.path.join(tmpdir,"fullcalendar"),"asanaview.html")
 
 def new_html_temp(src):
     """
@@ -55,7 +55,7 @@ def new_html_temp(src):
    
 def html_open(tmpdir,file):
     """
-    Try to open an html file in the OS default web browser. If that fails, 
+    Try to open an html file in the OS asanaview web browser. If that fails, 
     provide a link to open it in Jupyter.
     """
     opened = webbrowser.open_new_tab('file://' + os.path.join(tmpdir,file))
